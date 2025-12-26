@@ -1,9 +1,9 @@
-import { Client } from "@db/postgres";
+import { Pool } from "@db/postgres";
 import { envOrThrow } from "@dudasaus/env-or-throw";
 
-const client = new Client(envOrThrow("DATABASE_URL"));
+const pool = new Pool(envOrThrow("DATABASE_URL"), 10);
 
-await client.connect();
+const client = await pool.connect();
 
 await client.queryArray`create table if not exists users (
     id serial primary key,
@@ -15,5 +15,3 @@ const result = await client.queryObject<{ id: number; username: string }>(
 	["Owli"],
 );
 console.log(result);
-
-await client.end();
